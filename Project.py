@@ -26,7 +26,7 @@ class Person(object):
         return self._age 
     @age.setter
     def age(self, new_age):
-        if new_age < 0:
+        if new_age < 0 or new_age > 150:
             raise ValueError("age of a person must be positive.")
         self._age = new_age
 
@@ -42,6 +42,10 @@ class Student(Person):
         self.term = term
         self.courses_grades = courses_grades
         Student.student_number += 1
+
+    @staticmethod
+    def vaild_grade(grade):
+        return isinstance(grade, (int, float)) and (0 <= grade <= 20)
 
     @property
     def student_id(self):
@@ -72,7 +76,7 @@ class Student(Person):
     def term(self, new_term):
         if not isinstance(new_term, int):
             raise TypeError("number of term must be integer")
-        if new_term <= 0:
+        if new_term <= 0 or new_term > 20:
             raise ValueError("number of term must be positive")
         self._term = new_term
 
@@ -86,10 +90,8 @@ class Student(Person):
         for course, grade in new_courses_grades.items():
             if not isinstance(course, str):
                 raise TypeError("course must be a string")
-            if not isinstance(grade, (int, float)):
-                raise TypeError("grade must be a number")
-            if not (grade >= 0 and grade <= 20):
-                raise ValueError("grades must be between 0,20")
+            if not Student.vaild_grade(grade):
+                 raise ValueError("grades must be number between 0,20")
         self._courses_grades = new_courses_grades
 
     def __str__(self):
@@ -177,10 +179,8 @@ class EducationSystem(object):
     def add_grade(self, std_id, course_name, grade):
         student = self.find_student(std_id)
         course = self.find_course(course_name)
-        if not isinstance(grade, (int, float)):
-                raise TypeError("grade must be a number")
-        if not (grade >= 0 and grade <= 20):
-                raise ValueError("grades must be between 0,20")
+        if not Student.vaild_grade(grade):
+            raise ValueError("grades must be number between 0,20")    
         student.courses_grades[course.course_name] = grade
 
     def calculate_gpa(self, std_id):
